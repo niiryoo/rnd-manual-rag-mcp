@@ -1,0 +1,10 @@
+# PDF 파싱 (텍스트 + 레이아웃 좌표 추출)
+pymupdf
+
+# SQLite 유틸리티.
+# 참고: sqlite3 자체는 Python 표준 라이브러리라 설치가 필요 없음.
+# sqlite-utils는 스키마 생성 / FTS5 색인 / CLI 탐색을 편하게 해주는 래퍼라 포함.
+sqlite-utils
+
+# MCP 서버 (stdio 기반 도구 노출)
+mcp
