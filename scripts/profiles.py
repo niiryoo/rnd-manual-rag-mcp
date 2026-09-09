@@ -71,6 +71,7 @@ _ROMAN_ITEM = (
 
 INNOVATION_LAW_ALIASES = {
     "법": "국가연구개발혁신법",
+    "혁신법": "국가연구개발혁신법",
     "시행령": "국가연구개발혁신법 시행령",
     "시행규칙": "국가연구개발혁신법 시행규칙",
 }
@@ -88,7 +89,8 @@ PROFILES: dict[str, DocProfile] = {
         body_size=10.4,
         level_patterns=_CHAPTER_SECTION_ITEM,
         alias_map=dict(INNOVATION_LAW_ALIASES),
-        form_appendix_printed=((327, 512),),
+        # 부록5의 서식 활용 매트릭스가 마지막 쪽까지 이어진다
+        form_appendix_printed=((327, 517),),
     ),
     "v1": DocProfile(
         doc_id="v1",

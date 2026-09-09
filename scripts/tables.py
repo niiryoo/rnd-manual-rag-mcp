@@ -23,6 +23,8 @@ class Table:
     rows: list[list[str]]
     caption: str
     kind: str  # table | formula
+    # 셀 추출이 놓친 표 안의 줄. 버리면 본문이 통째로 사라진다.
+    residual: tuple[str, ...] = ()
 
     @property
     def header(self) -> list[str]:
@@ -76,6 +78,20 @@ def _looks_like_formula(rows: list[list[str]]) -> bool:
     return "=" in joined and len(joined) < 400
 
 
+def _residual_lines(page: Page, bbox, rows: list[list[str]]) -> tuple[str, ...]:
+    captured = re.sub(r"\s", "", " ".join(c for r in rows for c in r))
+    out = []
+    for line in page.lines:
+        if not (bbox[1] - 2 <= line.y0 <= bbox[3] + 2):
+            continue
+        text = line.stripped
+        key = re.sub(r"\s", "", text)
+        if len(key) < 2 or key in captured:
+            continue
+        out.append(text)
+    return tuple(out)
+
+
 def _caption_for(page: Page, bbox) -> str:
     top = bbox[1]
     best = ""
@@ -121,6 +137,7 @@ def extract(doc: PdfDoc, page_pdf: int) -> list[Table]:
                 rows=_forward_fill(rows),
                 caption=_caption_for(page, t.bbox),
                 kind="table",
+                residual=_residual_lines(page, t.bbox, rows),
             )
         )
     return out
@@ -135,4 +152,6 @@ def to_markdown(table: Table) -> str:
     head, body = padded[0], padded[1:]
     lines = ["| " + " | ".join(head) + " |", "|" + "---|" * width]
     lines += ["| " + " | ".join(r) + " |" for r in body]
+    if table.residual:
+        lines += ["", *table.residual]
     return "\n".join(lines)
