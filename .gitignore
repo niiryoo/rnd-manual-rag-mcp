@@ -38,3 +38,6 @@ desktop.ini
 
 # --- 작업용 의사결정 초안 (정리 후 별도로 커밋 예정) ---
 docs/decisions.md
+
+# --- 청킹 산출물 (build_chunks.py로 재생성) ---
+data/processed/*.jsonl
