@@ -35,3 +35,6 @@ Thumbs.db
 desktop.ini
 .idea/
 .vscode/
+
+# --- 작업용 의사결정 초안 (정리 후 별도로 커밋 예정) ---
+docs/decisions.md
