@@ -5,9 +5,9 @@ from __future__ import annotations
 import re
 from dataclasses import dataclass
 
-from pdf_doc import PdfDoc
-from profiles import DocProfile
-from toc import TERMINATOR
+from rnd_rag.parsing.pdf_doc import PdfDoc
+from rnd_rag.parsing.profiles import DocProfile
+from rnd_rag.parsing.toc import TERMINATOR
 
 COVER = re.compile(r"^<\s*부록\s*(?P<no>\d+)\s*>")
 FORM_NO = re.compile(r"^(?P<no>제\s*\d+\s*호|별표\s*\d+|\d+\s*[.．])\s*")

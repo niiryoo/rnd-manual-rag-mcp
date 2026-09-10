@@ -2,15 +2,13 @@
 
 from __future__ import annotations
 
-import pathlib
 import re
 from dataclasses import dataclass
 
 import pymupdf
 
-from profiles import DocProfile
-
-RAW_DIR = pathlib.Path(__file__).resolve().parent.parent / "data" / "raw"
+from rnd_rag.parsing.profiles import DocProfile
+from rnd_rag.paths import RAW_DIR
 
 MARGIN = 60.0  # 러닝 헤더·푸터가 놓이는 상하단 여백
 BOLD_FLAG = 1 << 4

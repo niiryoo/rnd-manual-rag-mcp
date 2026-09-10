@@ -7,15 +7,14 @@ import json
 import pathlib
 import sys
 
-import refs
-from chunker import build
-from forms import parse_catalog
-from headings import locate
-from pdf_doc import PdfDoc
-from profiles import PROFILES
-from toc import parse_toc, sections as toc_sections
-
-OUT_DIR = pathlib.Path(__file__).resolve().parent.parent / "data" / "processed"
+from rnd_rag.parsing import refs
+from rnd_rag.parsing.chunker import build
+from rnd_rag.parsing.forms import parse_catalog
+from rnd_rag.parsing.headings import locate
+from rnd_rag.parsing.pdf_doc import PdfDoc
+from rnd_rag.parsing.profiles import PROFILES
+from rnd_rag.parsing.toc import parse_toc, sections as toc_sections
+from rnd_rag.paths import PROCESSED_DIR as OUT_DIR
 
 
 def _write(path: pathlib.Path, rows) -> int:
@@ -59,5 +58,9 @@ def run(doc_ids: list[str] | None = None) -> None:
     print(f"\n합계  섹션 {n_sec}  청크 {n_chunk}  참조 {n_ref}  →  {OUT_DIR}")
 
 
-if __name__ == "__main__":
+def main() -> None:
     run(sys.argv[1:] or None)
+
+
+if __name__ == "__main__":
+    main()

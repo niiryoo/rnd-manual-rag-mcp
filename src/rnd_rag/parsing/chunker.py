@@ -5,12 +5,12 @@ from __future__ import annotations
 import re
 from dataclasses import dataclass, field
 
-import tables
-from forms import FormEntry, to_text as form_to_text
-from headings import Heading
-from pdf_doc import Line, PdfDoc, is_footer_number
-from profiles import DocProfile
-from tables import Table
+from rnd_rag.parsing import tables
+from rnd_rag.parsing.forms import FormEntry, to_text as form_to_text
+from rnd_rag.parsing.headings import Heading
+from rnd_rag.parsing.pdf_doc import Line, PdfDoc, is_footer_number
+from rnd_rag.parsing.profiles import DocProfile
+from rnd_rag.parsing.tables import Table
 
 CHILD_MAX_CHARS = 700
 TABLE_MAX_CHARS = 1800

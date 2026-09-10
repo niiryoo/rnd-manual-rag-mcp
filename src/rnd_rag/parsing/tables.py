@@ -7,7 +7,7 @@ from dataclasses import dataclass
 
 import pymupdf
 
-from pdf_doc import Page, PdfDoc
+from rnd_rag.parsing.pdf_doc import Page, PdfDoc
 
 CAPTION = re.compile(r"^[<\[]\s*(?:표|그림)\s*[\d\-–~]+\s*[>\]]")
 CAPTION_GAP = 45.0  # 표 위 캡션이 떨어져 있는 거리

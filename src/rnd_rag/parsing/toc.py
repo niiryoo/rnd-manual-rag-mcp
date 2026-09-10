@@ -5,8 +5,8 @@ from __future__ import annotations
 import re
 from dataclasses import dataclass
 
-from pdf_doc import PdfDoc
-from profiles import FIGURE, DocProfile
+from rnd_rag.parsing.pdf_doc import PdfDoc
+from rnd_rag.parsing.profiles import FIGURE, DocProfile
 
 # 제목이 길면 리더가 점 두 개까지 줄어드는 줄이 있다.
 LEADER = re.compile(r"[·․‥…．.∙•]{2,}")

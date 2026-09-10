@@ -6,9 +6,9 @@ import difflib
 import re
 from dataclasses import dataclass
 
-from pdf_doc import Line, Page, PdfDoc
-from profiles import DocProfile
-from toc import TocEntry
+from rnd_rag.parsing.pdf_doc import Line, Page, PdfDoc
+from rnd_rag.parsing.profiles import DocProfile
+from rnd_rag.parsing.toc import TocEntry
 
 # 장 표지는 번호 없이 제목만 큰 글씨로 앉히고, 본문 첫 장은 번호만 따로 조판한다.
 LEADING_NUMBER = re.compile(
