@@ -56,9 +56,15 @@ pip install -e .
 ## 사용
 
 ```powershell
-rag-build              # 5개 문서 전부 청킹 → data/processed/*.jsonl
-rag-build v2 v4        # 일부 문서만
+rag-build                      # 5개 문서 전부 청킹 → data/processed/*.jsonl
+rag-build v2 v4                # 일부 문서만
+
+python eval\validate.py        # 파싱 검증 (기준 충족 여부 판정)
+python eval\validate.py v2 v4  # 일부 문서만
 ```
+
+`validate.py`는 기준을 충족하지 못하면 종료 코드 1을 반환한다. 현재 검사 항목은
+쪽번호 오프셋, 헤딩 매칭, 본문 커버리지, 서식 카탈로그 종수 네 가지다.
 
 ## 향후 개선
 
