@@ -8,7 +8,7 @@ from dataclasses import dataclass, field
 from rnd_rag.parsing import tables
 from rnd_rag.parsing.forms import FormEntry, to_text as form_to_text
 from rnd_rag.parsing.headings import Heading
-from rnd_rag.parsing.pdf_doc import Line, PdfDoc, is_footer_number
+from rnd_rag.parsing.pdf_doc import Line, PdfDoc
 from rnd_rag.parsing.profiles import DocProfile
 from rnd_rag.parsing.tables import Table
 
@@ -91,9 +91,6 @@ def _page_blocks(cache: _TableCache, page_pdf: int, y_min: float, y_max: float):
         if _in_table(line, tbls):
             continue
         if re.sub(r"\s", "", line.stripped) in claimed:
-            continue
-        # 여백 기준을 벗어나 살아남은 쪽번호가 있다
-        if is_footer_number(line.stripped) and line.y0 > page.height * 0.88:
             continue
         items.append((line.y0, "line", line))
     items.sort(key=lambda x: x[0])

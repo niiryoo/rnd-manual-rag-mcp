@@ -11,6 +11,8 @@ from rnd_rag.parsing.profiles import DocProfile
 from rnd_rag.paths import RAW_DIR
 
 MARGIN = 60.0  # 러닝 헤더·푸터가 놓이는 상하단 여백
+# 별권3은 쪽번호가 MARGIN보다 4pt 위에 앉아 본문으로 섞인다
+FOOTER_BAND = 0.92
 BOLD_FLAG = 1 << 4
 
 _FOOTER_NUM = re.compile(r"^[/\\]?\s*\d{1,3}\s*[/\\]?$")
@@ -82,6 +84,8 @@ class PdfDoc:
                 if y0 < MARGIN or y0 > h - MARGIN:
                     continue
                 text = "".join(s["text"] for s in line["spans"])
+                if y0 > h * FOOTER_BAND and is_footer_number(text):
+                    continue
                 lead = spans[0]
                 lines.append(
                     Line(
@@ -106,6 +110,20 @@ class PdfDoc:
         end = end or self.page_count
         for pno in range(start, end + 1):
             yield self.page(pno)
+
+    def footer_lines(self, page_pdf: int) -> list[str]:
+        """page()가 버리는 하단 줄. 쪽번호 검증에 쓴다."""
+        p = self.raw_page(page_pdf)
+        cutoff = p.rect.height * FOOTER_BAND
+        out = []
+        for block in p.get_text("dict")["blocks"]:
+            for line in block.get("lines", []):
+                if line["bbox"][1] <= cutoff:
+                    continue
+                text = "".join(s["text"] for s in line["spans"]).strip()
+                if text:
+                    out.append(text)
+        return out
 
     def image_coverage(self, page_pdf: int) -> float:
         p = self.raw_page(page_pdf)
