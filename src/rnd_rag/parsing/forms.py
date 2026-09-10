@@ -12,6 +12,8 @@ from rnd_rag.parsing.toc import TERMINATOR
 COVER = re.compile(r"^<\s*부록\s*(?P<no>\d+)\s*>")
 FORM_NO = re.compile(r"^(?P<no>제\s*\d+\s*호|별표\s*\d+|\d+\s*[.．])\s*")
 DELETED = re.compile(r"^삭제$")
+# 표지 제목이 수록 종수를 밝히는 부록이 있다: "시행규칙 서식(10종)"
+DECLARED = re.compile(r"\(\s*(\d+)\s*종\s*\)")
 
 
 @dataclass(frozen=True)
@@ -86,6 +88,12 @@ def parse_catalog(doc: PdfDoc, profile: DocProfile) -> list[FormEntry]:
                 )
             )
     return entries
+
+
+def declared_count(appendix_title: str) -> int | None:
+    """표지가 밝힌 수록 종수. 밝히지 않은 부록은 None."""
+    m = DECLARED.search(appendix_title)
+    return int(m.group(1)) if m else None
 
 
 def to_text(e: FormEntry) -> str:

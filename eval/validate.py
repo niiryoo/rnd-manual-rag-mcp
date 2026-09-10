@@ -14,17 +14,15 @@ import statistics
 import sys
 from dataclasses import dataclass
 
-from rnd_rag.parsing.forms import parse_catalog
+from rnd_rag.parsing.forms import declared_count, parse_catalog
 from rnd_rag.parsing.headings import locate
 from rnd_rag.parsing.pdf_doc import PdfDoc
-from rnd_rag.parsing.profiles import PROFILES, DocProfile
+from rnd_rag.parsing.profiles import PROFILES
 from rnd_rag.parsing.toc import parse_toc, sections as toc_sections
 from rnd_rag.paths import PROCESSED_DIR
 
 MIN_COVERAGE = 0.99
 FOOTER_NUM = re.compile(r"^[/\\]?\s*(\d{1,3})\s*[/\\]?$")
-# 부록 표지가 선언한 서식 종수
-DECLARED_FORMS = {1: 10, 2: 19, 4: 26}
 
 
 @dataclass
@@ -118,22 +116,27 @@ def check_form_catalog(docs: dict[str, PdfDoc]) -> Result | None:
     targets = {d: doc for d, doc in docs.items() if doc.profile.form_appendix_printed}
     if not targets:
         return None
-    print("\n■ 서식 카탈로그")
-    wrong = 0
+    print("\n■ 서식 카탈로그 (표지가 선언한 종수와 대조)")
+    wrong = unchecked = 0
     for doc_id, doc in targets.items():
         catalog = parse_catalog(doc, doc.profile)
         counted = collections.Counter(e.appendix_no for e in catalog)
+        titles = {e.appendix_no: e.appendix_title for e in catalog}
         for appendix_no in sorted(counted):
             got = counted[appendix_no]
-            want = DECLARED_FORMS.get(appendix_no)
+            want = declared_count(titles[appendix_no])
             if want is None:
-                print(f"  부록{appendix_no}  {got:>2}종 (표지에 종수 선언 없음)")
+                unchecked += 1
+                print(f"  부록{appendix_no}  {got:>2}종  표지에 종수 선언 없음 — 대조 불가")
                 continue
-            mark = "일치" if got == want else f"불일치 (표지 {want}종)"
             wrong += got != want
-            print(f"  부록{appendix_no}  {got:>2}종 (표지 선언 {want}종)  {mark}")
+            mark = "일치" if got == want else "불일치"
+            print(f"  부록{appendix_no}  {got:>2}종  표지 선언 {want}종  {mark}")
         print(f"  {doc_id} 합계 {len(catalog)}종")
-    return Result("서식 카탈로그", wrong == 0, f"불일치 {wrong}건")
+    summary = f"불일치 {wrong}건"
+    if unchecked:
+        summary += f" (대조 불가 {unchecked}건)"
+    return Result("서식 카탈로그", wrong == 0, summary)
 
 
 def report_chunk_sizes(chunks: list[dict]) -> None:
