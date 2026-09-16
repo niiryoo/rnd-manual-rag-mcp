@@ -76,14 +76,26 @@ class Repository:
     def __init__(self, con: sqlite3.Connection):
         self.con = con
 
-    def search_keyword(self, query: str, limit: int) -> list[Hit]:
+    def search_keyword(self, query: str, limit: int, doc_id: str | None = None,
+                       content_type: str | None = None) -> list[Hit]:
         expr = to_match_expr(query)
         if not expr:
             return []
+        # 필터를 limit 뒤에 걸면 대상이 소수일 때 결과가 빈다
+        where = ["chunks_fts MATCH ?"]
+        params: list = [expr]
+        if doc_id:
+            where.append("c.doc_id = ?")
+            params.append(doc_id)
+        if content_type:
+            where.append("c.content_type = ?")
+            params.append(content_type)
+        params.append(limit)
         rows = self.con.execute(
-            "SELECT chunk_id, bm25(chunks_fts) AS score FROM chunks_fts "
-            "WHERE chunks_fts MATCH ? ORDER BY score LIMIT ?",
-            (expr, limit),
+            "SELECT f.chunk_id, bm25(chunks_fts) AS score "
+            "FROM chunks_fts f JOIN chunks c ON c.chunk_id = f.chunk_id "
+            f"WHERE {' AND '.join(where)} ORDER BY score LIMIT ?",
+            params,
         ).fetchall()
         return [Hit(r["chunk_id"], r["score"]) for r in rows]
 

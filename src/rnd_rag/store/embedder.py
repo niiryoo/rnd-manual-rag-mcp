@@ -5,6 +5,7 @@ from __future__ import annotations
 import hashlib
 import os
 import time
+from functools import lru_cache
 
 import numpy as np
 from dotenv import load_dotenv
@@ -20,6 +21,17 @@ RETRIES = 3
 load_dotenv(ROOT / ".env")
 
 
+_client: OpenAI | None = None
+
+
+def client() -> OpenAI:
+    """커넥션 풀을 유지해야 왕복이 2초에서 300ms대로 떨어진다."""
+    global _client
+    if _client is None:
+        _client = OpenAI()
+    return _client
+
+
 def model_name() -> str:
     return os.getenv("EMBEDDING_MODEL") or DEFAULT_MODEL
 
@@ -31,10 +43,10 @@ def _digest(texts: list[str], model: str) -> str:
     return h.hexdigest()[:16]
 
 
-def _call(client: OpenAI, batch: list[str], model: str):
+def _call(batch: list[str], model: str):
     for attempt in range(RETRIES):
         try:
-            return client.embeddings.create(model=model, input=batch)
+            return client().embeddings.create(model=model, input=batch)
         except Exception:
             if attempt == RETRIES - 1:
                 raise
@@ -43,19 +55,23 @@ def _call(client: OpenAI, batch: list[str], model: str):
 
 def embed(texts: list[str], model: str | None = None, progress: bool = False) -> np.ndarray:
     model = model or model_name()
-    client = OpenAI()
     vectors = []
     for i in range(0, len(texts), BATCH):
-        response = _call(client, texts[i : i + BATCH], model)
+        response = _call(texts[i : i + BATCH], model)
         vectors += [d.embedding for d in response.data]
         if progress:
             print(f"    임베딩 {min(i + BATCH, len(texts))}/{len(texts)}", end="\r")
     return normalize(np.array(vectors, dtype=np.float32))
 
 
+@lru_cache(maxsize=512)
+def embed_query(query: str, model: str | None = None) -> np.ndarray:
+    """같은 질의가 반복되는 벤치마크에서 API 호출을 줄인다."""
+    return embed([query], model)[0]
+
+
 def embed_cached(name: str, texts: list[str], model: str | None = None,
                  progress: bool = False) -> np.ndarray:
-    """색인용. 같은 입력이면 API 를 다시 부르지 않는다."""
     model = model or model_name()
     CACHE_DIR.mkdir(parents=True, exist_ok=True)
     path = CACHE_DIR / f"{name}.npz"

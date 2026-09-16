@@ -1,5 +1,3 @@
-"""청킹 산출물을 DB로 적재한다."""
-
 from __future__ import annotations
 
 import sys

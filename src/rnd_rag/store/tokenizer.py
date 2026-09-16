@@ -29,5 +29,4 @@ def content_words(query: str) -> list[str]:
 
 
 def to_match_expr(query: str) -> str:
-    """어절 안은 구절로 묶고 어절끼리는 OR 로 잇는다."""
     return " OR ".join('"' + " ".join(bigrams(w)) + '"' for w in content_words(query))
