@@ -39,7 +39,8 @@ _service = SearchService(_repo)
     )
 )
 def search_manual(query: str, limit: int = 3, doc_id: str | None = None) -> str:
-    return format_results(_service.search(query, limit=limit, doc_id=doc_id))
+    response = _service.search(query, limit=limit, doc_id=doc_id)
+    return format_results(response.results, keyword_only=response.keyword_only)
 
 
 @mcp.tool(

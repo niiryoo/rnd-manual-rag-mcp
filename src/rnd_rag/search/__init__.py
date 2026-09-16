@@ -1,3 +1,3 @@
-from rnd_rag.search.service import SearchResult, SearchService
+from rnd_rag.search.service import SearchResponse, SearchResult, SearchService
 
-__all__ = ["SearchService", "SearchResult"]
+__all__ = ["SearchService", "SearchResponse", "SearchResult"]

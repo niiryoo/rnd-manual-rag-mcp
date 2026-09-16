@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import logging
 from dataclasses import dataclass
 
 from rnd_rag.search.fusion import KEYWORD_WEIGHT, reciprocal_rank_fusion
@@ -10,6 +11,8 @@ from rnd_rag.store.embedder import embed_query
 
 CANDIDATE_POOL = 100  # 융합 전에 각 경로에서 가져오는 후보 수
 DEFAULT_LIMIT = 5
+
+log = logging.getLogger(__name__)
 
 
 @dataclass(frozen=True)
@@ -28,19 +31,32 @@ class SearchResult:
         return "\n\n".join(c.text for c in self.chunks)
 
 
+@dataclass(frozen=True)
+class SearchResponse:
+    results: list[SearchResult]
+    keyword_only: bool = False  # 임베딩 호출이 실패해 키워드로만 찾은 경우
+
+
 class SearchService:
     def __init__(self, repo: Repository):
         self.repo = repo
 
     def search(self, query: str, limit: int = DEFAULT_LIMIT,
-               doc_id: str | None = None) -> list[SearchResult]:
+               doc_id: str | None = None) -> SearchResponse:
         keyword = self.repo.search_keyword(query, CANDIDATE_POOL, doc_id=doc_id)
-        vector = self.repo.search_vector(embed_query(query), CANDIDATE_POOL, doc_id=doc_id)
-        fused = reciprocal_rank_fusion([
-            ([h.chunk_id for h in keyword], KEYWORD_WEIGHT),
-            ([h.chunk_id for h in vector], 1.0),
-        ])
-        return self._to_sections(fused, limit)
+        ranked = [([h.chunk_id for h in keyword], KEYWORD_WEIGHT)]
+
+        # 회사망에서 API 가 막혀 있어도 도구는 동작해야 한다
+        keyword_only = False
+        try:
+            vector = self.repo.search_vector(embed_query(query), CANDIDATE_POOL, doc_id=doc_id)
+            ranked.append(([h.chunk_id for h in vector], 1.0))
+        except Exception as e:
+            log.warning("질의 임베딩 실패, 키워드만 사용: %s: %s", type(e).__name__, e)
+            keyword_only = True
+
+        fused = reciprocal_rank_fusion(ranked)
+        return SearchResponse(self._to_sections(fused, limit), keyword_only)
 
     def _to_sections(self, fused: list[tuple[str, float]], limit: int) -> list[SearchResult]:
         section_of = {c.chunk_id: c.section_id for c in self.repo.chunks([c for c, _ in fused])}

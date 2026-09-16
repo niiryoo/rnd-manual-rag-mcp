@@ -7,6 +7,11 @@ from rnd_rag.store import Chunk
 
 SNIPPET_CHARS = 1200  # 섹션 하나가 3만 자를 넘기도 해 그대로 주면 토큰이 샌다
 SECTION_CHARS = 6000  # get_section 한 번에 돌려줄 상한. 넘으면 이어보기로 나눈다
+DEGRADED_NOTE = (
+    "[주의] 의미 검색을 쓸 수 없어 키워드 검색 결과만이다. "
+    "질문의 표현이 매뉴얼 용어와 다르면 관련 내용이 빠졌을 수 있으니, "
+    "답이 불충분하면 매뉴얼에 쓰일 법한 용어로 다시 검색할 것."
+)
 
 DOC_TITLES = {
     "main": "본권 국가연구개발혁신법 매뉴얼",
@@ -41,10 +46,12 @@ def format_result(result: SearchResult, index: int, limit: int = SNIPPET_CHARS) 
     return "\n".join(lines)
 
 
-def format_results(results: list[SearchResult], limit: int = SNIPPET_CHARS) -> str:
+def format_results(results: list[SearchResult], limit: int = SNIPPET_CHARS,
+                   keyword_only: bool = False) -> str:
     if not results:
         return "검색 결과가 없다. 다른 표현으로 다시 검색할 것."
-    return "\n\n---\n\n".join(format_result(r, i, limit) for i, r in enumerate(results, 1))
+    body = "\n\n---\n\n".join(format_result(r, i, limit) for i, r in enumerate(results, 1))
+    return f"{DEGRADED_NOTE}\n\n{body}" if keyword_only else body
 
 
 def format_section(level_path: tuple[str, ...], doc_id: str, citation: str,

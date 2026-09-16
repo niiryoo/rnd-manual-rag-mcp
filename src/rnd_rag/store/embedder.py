@@ -18,6 +18,7 @@ CACHE_DIR = DB_DIR / "emb_cache"
 DEFAULT_MODEL = "text-embedding-3-large"
 BATCH = 128
 RETRIES = 3
+QUERY_TIMEOUT = 8.0  # 질의는 폴백이 있으므로 오래 기다리지 않는다
 
 load_dotenv(ROOT / ".env")
 
@@ -29,7 +30,7 @@ def client() -> OpenAI:
     """커넥션 풀을 유지해야 왕복이 2초에서 300ms대로 떨어진다."""
     global _client
     if _client is None:
-        _client = OpenAI()
+        _client = OpenAI(timeout=QUERY_TIMEOUT)
     return _client
 
 
@@ -44,21 +45,22 @@ def _digest(texts: list[str], model: str) -> str:
     return h.hexdigest()[:16]
 
 
-def _call(batch: list[str], model: str):
-    for attempt in range(RETRIES):
+def _call(batch: list[str], model: str, retries: int = RETRIES):
+    for attempt in range(retries):
         try:
             return client().embeddings.create(model=model, input=batch)
         except Exception:
-            if attempt == RETRIES - 1:
+            if attempt == retries - 1:
                 raise
             time.sleep(2 * (attempt + 1))
 
 
-def embed(texts: list[str], model: str | None = None, progress: bool = False) -> np.ndarray:
+def embed(texts: list[str], model: str | None = None, progress: bool = False,
+          retries: int = RETRIES) -> np.ndarray:
     model = model or model_name()
     vectors = []
     for i in range(0, len(texts), BATCH):
-        response = _call(texts[i : i + BATCH], model)
+        response = _call(texts[i : i + BATCH], model, retries)
         vectors += [d.embedding for d in response.data]
         if progress:
             # MCP 서버가 이 모듈을 import 한다. stdout 은 JSON-RPC 전용이다
@@ -70,7 +72,7 @@ def embed(texts: list[str], model: str | None = None, progress: bool = False) ->
 @lru_cache(maxsize=512)
 def embed_query(query: str, model: str | None = None) -> np.ndarray:
     """같은 질의가 반복되는 벤치마크에서 API 호출을 줄인다."""
-    return embed([query], model)[0]
+    return embed([query], model, retries=1)[0]
 
 
 def embed_cached(name: str, texts: list[str], model: str | None = None,
