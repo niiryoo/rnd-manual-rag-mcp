@@ -15,6 +15,7 @@ dependencies = [
 
 [project.scripts]
 rag-build = "rnd_rag.cli.build_chunks:main"
+rag-index = "rnd_rag.cli.build_index:main"
 
 [build-system]
 requires = ["hatchling"]
