@@ -41,3 +41,6 @@ docs/decisions.md
 
 # --- 청킹 산출물 (build_chunks.py로 재생성) ---
 data/processed/*.jsonl
+
+# --- 배포 꾸러미 (API 키 포함될 수 있음) ---
+dist/

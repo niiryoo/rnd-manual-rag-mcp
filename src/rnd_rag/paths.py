@@ -2,9 +2,11 @@
 
 from __future__ import annotations
 
+import os
 import pathlib
 
-ROOT = pathlib.Path(__file__).resolve().parents[2]
+# 소스 위치로 루트를 찾으므로 editable 설치를 전제한다. 옮겨야 하면 환경변수로 덮어쓴다
+ROOT = pathlib.Path(os.getenv("RND_RAG_ROOT") or pathlib.Path(__file__).resolve().parents[2])
 RAW_DIR = ROOT / "data" / "raw"
 PROCESSED_DIR = ROOT / "data" / "processed"
 DB_DIR = ROOT / "db"
