@@ -51,20 +51,48 @@ data/raw (PDF)
 pip install -e .
 
 # 3) 원본 PDF 5개를 data/raw/ 에 넣기 (git에는 커밋되지 않음)
+
+# 4) .env 만들고 OPENAI_API_KEY 채우기
+copy .env.example .env
 ```
 
 ## 사용
 
 ```powershell
-rag-build                      # 5개 문서 전부 청킹 → data/processed/*.jsonl
-rag-build v2 v4                # 일부 문서만
+rag-build                      # 5개 문서 청킹 → data/processed/*.jsonl
+rag-index                      # 청킹 산출물 → db/manual.db (임베딩 포함)
 
-python eval\validate.py        # 파싱 검증 (기준 충족 여부 판정)
-python eval\validate.py v2 v4  # 일부 문서만
+python eval\validate.py        # 파싱 검증
+python eval\check_ground_truth.py   # 정답셋이 말뭉치와 맞는지
+python eval\check_mcp.py       # MCP 서버를 띄워 도구 응답 확인
 ```
 
-`validate.py`는 기준을 충족하지 못하면 종료 코드 1을 반환한다. 현재 검사 항목은
-쪽번호 오프셋, 헤딩 매칭, 본문 커버리지, 서식 카탈로그 종수 네 가지다.
+검증 스크립트는 기준을 충족하지 못하면 종료 코드 1을 반환한다.
+
+## Claude Desktop 연결
+
+`claude_desktop_config.json` 에 아래를 추가하고 Claude Desktop 을 재시작한다.
+
+```json
+{
+  "mcpServers": {
+    "rnd-manual": {
+      "command": "C:\\경로\\rnd-manual-rag-mcp\\.venv\\Scripts\\python.exe",
+      "args": ["-m", "rnd_rag.mcp.server"]
+    }
+  }
+}
+```
+
+노출되는 도구는 넷이다. 사용자가 도구 이름을 부를 필요는 없고 Claude 가 질문을
+보고 스스로 호출한다.
+
+| 도구 | 용도 |
+|---|---|
+| `search_manual` | 규정 검색. 출처 쪽번호와 함께 섹션을 돌려준다 |
+| `get_section` | 섹션 전문. 긴 섹션은 `offset` 으로 이어서 본다 |
+| `find_form` | 서식 수록 위치 |
+| `find_citation` | 조항 번호를 인용한 대목 |
 
 ## 향후 개선
 

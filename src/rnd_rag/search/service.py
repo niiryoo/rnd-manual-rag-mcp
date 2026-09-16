@@ -21,11 +21,7 @@ class SearchResult:
 
     @property
     def citation(self) -> str:
-        pages = self.section.page_printed_start, self.section.page_printed_end
-        if pages[0] is None:
-            return f"{self.section.doc_id} 머리말"
-        span = f"p{pages[0]}" if pages[0] == pages[1] else f"p{pages[0]}~{pages[1]}"
-        return f"{self.section.doc_id} {span}"
+        return self.section.citation
 
     @property
     def text(self) -> str:

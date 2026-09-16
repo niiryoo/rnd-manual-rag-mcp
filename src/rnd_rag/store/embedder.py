@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import hashlib
 import os
+import sys
 import time
 from functools import lru_cache
 
@@ -60,7 +61,9 @@ def embed(texts: list[str], model: str | None = None, progress: bool = False) ->
         response = _call(texts[i : i + BATCH], model)
         vectors += [d.embedding for d in response.data]
         if progress:
-            print(f"    임베딩 {min(i + BATCH, len(texts))}/{len(texts)}", end="\r")
+            # MCP 서버가 이 모듈을 import 한다. stdout 은 JSON-RPC 전용이다
+            done = min(i + BATCH, len(texts))
+            print(f"    임베딩 {done}/{len(texts)}", end="\r", file=sys.stderr)
     return normalize(np.array(vectors, dtype=np.float32))
 
 

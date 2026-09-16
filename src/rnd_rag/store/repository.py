@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import sqlite3
+import threading
 from dataclasses import dataclass
 
 import numpy as np
@@ -41,6 +42,13 @@ class Section:
     page_printed_start: int | None
     page_printed_end: int | None
 
+    @property
+    def citation(self) -> str:
+        start, end = self.page_printed_start, self.page_printed_end
+        if start is None:
+            return "머리말"
+        return f"p{start}" if start == end else f"p{start}~{end}"
+
 
 @dataclass(frozen=True)
 class Hit:
@@ -73,8 +81,15 @@ def _section(row: sqlite3.Row) -> Section:
 
 
 class Repository:
+    """커넥션 하나를 여러 스레드가 동시에 쓰면 커서 상태가 엉킨다."""
+
     def __init__(self, con: sqlite3.Connection):
         self.con = con
+        self._lock = threading.Lock()
+
+    def _query(self, sql: str, params=()) -> list[sqlite3.Row]:
+        with self._lock:
+            return self.con.execute(sql, params).fetchall()
 
     def search_keyword(self, query: str, limit: int, doc_id: str | None = None,
                        content_type: str | None = None) -> list[Hit]:
@@ -91,12 +106,12 @@ class Repository:
             where.append("c.content_type = ?")
             params.append(content_type)
         params.append(limit)
-        rows = self.con.execute(
+        rows = self._query(
             "SELECT f.chunk_id, bm25(chunks_fts) AS score "
             "FROM chunks_fts f JOIN chunks c ON c.chunk_id = f.chunk_id "
             f"WHERE {' AND '.join(where)} ORDER BY score LIMIT ?",
             params,
-        ).fetchall()
+        )
         return [Hit(r["chunk_id"], r["score"]) for r in rows]
 
     def search_vector(self, vector: np.ndarray, limit: int, doc_id: str | None = None,
@@ -109,40 +124,39 @@ class Repository:
         if content_type:
             where.append("content_type = ?")
             params.append(content_type)
-        rows = self.con.execute(
+        rows = self._query(
             f"SELECT chunk_id, distance FROM chunk_vec WHERE {' AND '.join(where)} "
             "ORDER BY distance",
             params,
-        ).fetchall()
+        )
         return [Hit(r["chunk_id"], r["distance"]) for r in rows]
 
     def chunks(self, chunk_ids: list[str]) -> list[Chunk]:
         if not chunk_ids:
             return []
         marks = ",".join("?" * len(chunk_ids))
-        rows = self.con.execute(
-            f"SELECT * FROM chunks WHERE chunk_id IN ({marks})", chunk_ids
-        ).fetchall()
+        rows = self._query(f"SELECT * FROM chunks WHERE chunk_id IN ({marks})", chunk_ids)
         found = {r["chunk_id"]: _chunk(r) for r in rows}
         return [found[cid] for cid in chunk_ids if cid in found]
 
     def section(self, section_id: str) -> Section | None:
-        row = self.con.execute(
-            "SELECT * FROM sections WHERE section_id = ?", (section_id,)
-        ).fetchone()
-        return _section(row) if row else None
+        rows = self._query("SELECT * FROM sections WHERE section_id = ?", (section_id,))
+        return _section(rows[0]) if rows else None
 
     def section_chunks(self, section_id: str) -> list[Chunk]:
-        rows = self.con.execute(
+        rows = self._query(
             "SELECT * FROM chunks WHERE section_id = ? ORDER BY chunk_id", (section_id,)
-        ).fetchall()
+        )
         return [_chunk(r) for r in rows]
 
-    def chunks_citing(self, law: str, target: str) -> list[str]:
-        rows = self.con.execute(
-            "SELECT DISTINCT chunk_id FROM refs WHERE law = ? AND target = ?", (law, target)
-        ).fetchall()
-        return [r["chunk_id"] for r in rows]
+    def chunks_citing(self, target: str, law: str | None = None) -> list[str]:
+        if law:
+            sql = "SELECT DISTINCT chunk_id FROM refs WHERE target = ? AND law = ?"
+            params = (target, law)
+        else:
+            sql = "SELECT DISTINCT chunk_id FROM refs WHERE target = ?"
+            params = (target,)
+        return [r["chunk_id"] for r in self._query(sql, params)]
 
     def counts(self) -> dict[str, int]:
-        return {name: self.con.execute(sql).fetchone()[0] for name, sql in COUNT_SQL.items()}
+        return {name: self._query(sql)[0][0] for name, sql in COUNT_SQL.items()}

@@ -13,13 +13,15 @@ from rnd_rag.paths import DB_DIR
 DB_PATH = DB_DIR / "manual.db"
 
 
-def open_db(path: Path | None = None, readonly: bool = False) -> sqlite3.Connection:
+def open_db(path: Path | None = None, readonly: bool = False,
+            shared_threads: bool = False) -> sqlite3.Connection:
     target = path or DB_PATH
     target.parent.mkdir(parents=True, exist_ok=True)
+    # check_same_thread: MCP 도구가 AnyIO 워커 스레드에서 실행된다
     if readonly:
-        con = sqlite3.connect(f"file:{target}?mode=ro", uri=True)
+        con = sqlite3.connect(f"file:{target}?mode=ro", uri=True, check_same_thread=not shared_threads)
     else:
-        con = sqlite3.connect(target)
+        con = sqlite3.connect(target, check_same_thread=not shared_threads)
     con.row_factory = sqlite3.Row
     con.enable_load_extension(True)
     sqlite_vec.load(con)
