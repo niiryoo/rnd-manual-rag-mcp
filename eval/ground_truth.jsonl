@@ -1,0 +1,15 @@
+{"id": "q01", "query": "중소기업 기술료율 얼마야?", "type": "exact", "answer_sections": ["v2-s013"], "must_contain": ["2.5%"], "note": "제3자 실시·직접 실시 모두 중소기업 2.5%"}
+{"id": "q02", "query": "로열티 비율이 몇 퍼센트야?", "type": "synonym", "answer_sections": ["v2-s013"], "must_contain": ["2.5%"], "note": "'로열티'는 말뭉치에 없음. 임베딩만 잡을 수 있다"}
+{"id": "q03", "query": "직접 실시하는 경우 기술료는 어떻게 계산해?", "type": "conditional", "answer_sections": ["v2-s013", "v2-s018"], "must_contain": ["기술기여도"], "note": "표 행만으로는 부족하고 기술기여도 산정이 필요"}
+{"id": "q04", "query": "기술료 감면 조건", "type": "exact", "answer_sections": ["v2-s009", "v2-s015"], "must_contain": ["국가안보"], "note": "일반(제2장)과 세부(제3장) 두 절에 나뉘어 있다"}
+{"id": "q05", "query": "감면", "type": "short", "answer_sections": ["v2-s009", "v2-s015"], "must_contain": [], "note": "2글자 질의. trigram이 처리 못 하는 경우"}
+{"id": "q06", "query": "학생인건비 잔액이 남으면 어떻게 처리해?", "type": "natural", "answer_sections": ["v1-s018"], "must_contain": ["3월 31일"], "note": "12월 31일 기준 산정, 차년도 3월 31일까지 이체"}
+{"id": "q07", "query": "학생인건비 이관 절차", "type": "exact", "answer_sections": ["v1-s020"], "must_contain": [], "note": ""}
+{"id": "q08", "query": "학생인건비 계상기준은 누가 정해?", "type": "natural", "answer_sections": ["v1-s008"], "must_contain": [], "note": ""}
+{"id": "q09", "query": "학생연구원 인건비 지급", "type": "legacy_term", "answer_sections": ["v1-s017"], "must_contain": [], "note": "'학생연구원'은 2020년 이전 폐지 용어. 현행은 '학생연구자'"}
+{"id": "q10", "query": "학생인건비통합관리기관 지정취소 기준", "type": "exact", "answer_sections": ["v1-s025"], "must_contain": [], "note": "장비비 통합관리기관 지정취소(v4-s011)와 구분되어야 한다"}
+{"id": "q11", "query": "연구시설 장비비 적립 한도", "type": "exact", "answer_sections": ["v4-s006", "v4-s007"], "must_contain": [], "note": ""}
+{"id": "q12", "query": "연구개발계획서 서식은 어디 있어?", "type": "form", "answer_sections": ["main-forms"], "must_contain": ["329"], "note": "본권 인쇄 329쪽, 시행규칙 별지 제1호"}
+{"id": "q13", "query": "제재부가금 처분 기준", "type": "exact", "answer_sections": ["v3-s053"], "must_contain": [], "note": "시행령 제59조제2항 관련 [별표7]"}
+{"id": "q14", "query": "참여제한 기간은 최대 몇 년이야?", "type": "natural", "answer_sections": ["v3-s052"], "must_contain": [], "note": "위반행위별 개별기준, 2분의 1 범위 가중·감경"}
+{"id": "q15", "query": "기술료율", "type": "cross_doc", "answer_sections": ["v2-s013", "main-s027"], "must_contain": [], "note": "별권2와 본권 제6절에 같은 내용이 있다"}
