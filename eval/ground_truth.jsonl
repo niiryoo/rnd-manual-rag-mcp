@@ -4,27 +4,27 @@
 {"id": "q04", "query": "기술료 감면 조건", "type": "exact", "answer_sections": ["v2-s009", "v2-s015"], "must_contain": ["국가안보"], "note": "일반(제2장)과 세부(제3장) 두 절에 나뉘어 있다"}
 {"id": "q05", "query": "감면", "type": "short", "answer_sections": ["v2-s009", "v2-s015"], "must_contain": ["국가안보"], "note": "2글자 질의. trigram이 처리 못 하는 경우"}
 {"id": "q06", "query": "학생인건비 잔액이 남으면 어떻게 처리해?", "type": "natural", "answer_sections": ["v1-s018"], "must_contain": ["3월 31일"], "note": "12월 31일 기준 산정, 차년도 3월 31일까지 이체"}
-{"id": "q07", "query": "학생인건비 이관 절차", "type": "exact", "answer_sections": ["v1-s020"], "must_contain": [], "note": ""}
-{"id": "q08", "query": "학생인건비 계상기준은 누가 정해?", "type": "natural", "answer_sections": ["v1-s008"], "must_contain": [], "note": ""}
-{"id": "q09", "query": "학생연구원 인건비 지급", "type": "legacy_term", "answer_sections": ["v1-s017"], "must_contain": [], "note": "'학생연구원'은 2020년 이전 폐지 용어. 현행은 '학생연구자'"}
+{"id": "q07", "query": "학생인건비 이관 절차", "type": "exact", "answer_sections": ["v1-s020"], "must_contain": ["계정대체"], "note": "고시 제95조. 연구책임자 소속·변경 시 책임자계정 잔액을 이체 또는 계정대체"}
+{"id": "q08", "query": "학생인건비 계상기준은 누가 정해?", "type": "natural", "answer_sections": ["v1-s008", "main-s047"], "must_contain": ["자율적으로"], "note": "고시 하한(학사 130만·석사 220만·박사 300만) 이상에서 기관이 자율 설정. 본권 제4절에도 같은 내용"}
+{"id": "q09", "query": "학생연구원 인건비 지급", "type": "legacy_term", "answer_sections": ["v1-s017"], "must_contain": ["개인계좌"], "note": "'학생연구원'은 2020년 이전 폐지 용어. 현행은 '학생연구자'"}
 {"id": "q10", "query": "학생인건비통합관리기관 지정취소 기준", "type": "exact", "answer_sections": ["v1-s025"], "must_contain": ["2%", "2회"], "note": "장비비 통합관리기관 지정취소(v4-s011)와 구분되어야 한다"}
 {"id": "q11", "query": "연구시설 장비비 적립 한도", "type": "exact", "answer_sections": ["v4-s006", "v4-s007"], "must_contain": ["10%", "90일"], "note": ""}
 {"id": "q12", "query": "연구개발계획서 서식은 어디 있어?", "type": "form", "answer_sections": ["main-forms"], "must_contain": ["329"], "note": "본권 인쇄 329쪽, 시행규칙 별지 제1호"}
 {"id": "q13", "query": "제재부가금 처분 기준", "type": "exact", "answer_sections": ["v3-s053"], "must_contain": ["100분의 20"], "note": "시행령 제59조제2항 관련 [별표7]"}
-{"id": "q14", "query": "참여제한 기간은 최대 몇 년이야?", "type": "natural", "answer_sections": ["v3-s052"], "must_contain": ["10년"], "note": "위반행위별 개별기준, 2분의 1 범위 가중·감경"}
+{"id": "q14", "query": "참여제한 기간은 최대 몇 년이야?", "type": "natural", "answer_sections": ["v3-s052", "main-s036"], "must_contain": ["10년"], "note": "혁신법 제32조가 '10년 이내의 범위'로 상한을 정하고, v3-s052 개별기준의 최대가 7년 초과 10년 이내"}
 {"id": "q15", "query": "기술료율", "type": "cross_doc", "answer_sections": ["v2-s013", "main-s027"], "must_contain": ["2.5%", "5%", "10%"], "note": "별권2와 본권 제6절에 같은 내용이 있다"}
 {"id": "q16", "query": "대기업이 국가연구개발과제 할 때 정부지원 비율 얼마야?", "type": "exact", "answer_sections": ["main-s044"], "must_contain": ["50%"], "note": "표 3-2 기관유형별 부담기준. 공기업·대기업 50% 이하"}
 {"id": "q17", "query": "중견기업은 기관부담금 중에 현금을 얼마나 내야 해?", "type": "exact", "answer_sections": ["main-s044"], "must_contain": ["13%"], "note": "'초기 중견기업'(10%)과 구분해야 한다"}
 {"id": "q18", "query": "출연연 참여연구자 인건비 계상한도가 어떻게 돼?", "type": "exact", "answer_sections": ["main-s046"], "must_contain": ["130%"], "note": "표 3-9. 출연연은 연 단위 130% 이하"}
 {"id": "q19", "query": "사용기준 위반 금액이 2억원이면 참여제한 몇 년이야?", "type": "conditional", "answer_sections": ["v3-s052"], "must_contain": ["5년 초과 7년 이내"], "note": "1억 초과 5억 이하 구간"}
 {"id": "q20", "query": "연구비 800만원 잘못 썼으면 참여제한 기간은?", "type": "conditional", "answer_sections": ["v3-s052"], "must_contain": ["6개월 이상 2년 이내"], "note": "1,000만원 이하 구간"}
-{"id": "q21", "query": "사용기준 위반액이 6억이면 제재부가금 얼마야?", "type": "conditional", "answer_sections": ["v3-s053"], "must_contain": ["7억원"], "note": "5억 초과 구간. 7억 + 초과분의 200%"}
+{"id": "q21", "query": "사용기준 위반액이 6억이면 제재부가금 얼마야?", "type": "conditional", "answer_sections": ["v3-s053"], "must_contain": ["7억원", "100분의 200"], "note": "5억 초과 구간. 7억원 + 초과금액의 100분의 200"}
 {"id": "q22", "query": "보안사항을 국외로 유출하면 제재부가금이 얼마야?", "type": "exact", "answer_sections": ["v3-s053"], "must_contain": ["100분의 50"], "note": "국내 누설(20%)과 구분"}
-{"id": "q23", "query": "연구비 3억을 용도 위반으로 썼어. 참여제한이랑 제재부가금 둘 다 얼마나 받아?", "type": "multi_hop", "answer_sections": ["v3-s052", "v3-s053"], "must_contain": ["5년 초과 7년 이내", "1억원"], "note": "참여제한 표와 제재부가금 표 두 곳을 조합해야 한다"}
+{"id": "q23", "query": "연구비 3억을 용도 위반으로 썼어. 참여제한이랑 제재부가금 둘 다 얼마나 받아?", "type": "multi_hop", "answer_sections": ["v3-s052", "v3-s053"], "must_contain": ["5년 초과 7년 이내", "100분의 150"], "note": "참여제한 표와 제재부가금 표 두 곳을 조합해야 한다. 제재부가금은 1억원 + 초과금액의 100분의 150"}
 {"id": "q24", "query": "중소기업이 직접 실시로 매출이 났는데 기술료를 얼마 내야 하는지 계산 방법 알려줘", "type": "multi_hop", "answer_sections": ["v2-s013", "v2-s018"], "must_contain": ["기술기여도", "2.5%"], "note": "기술료율 표 + 기술기여도 산정식 조합"}
 {"id": "q25", "query": "대학이랑 출연연이랑 인건비 계상한도가 다른가?", "type": "comparison", "answer_sections": ["main-s046"], "must_contain": ["130%", "100%"], "note": "같은 표 안에서 두 기관유형을 비교"}
-{"id": "q26", "query": "학생인건비를 통합관리기관이 아닌 데서 받으면 뭐가 달라져?", "type": "comparison", "answer_sections": ["v1-s017"], "must_contain": [], "note": "통합관리 여부에 따른 차이"}
-{"id": "q27", "query": "기술료를 안 내면 어떻게 돼?", "type": "multi_hop", "answer_sections": ["v2-s014", "main-s026", "v3-s046"], "must_contain": [], "note": "미납 시 독촉·가산금·국세 강제징수. 제재처분 사유이기도 하나 1차 답은 납부·징수 절차"}
-{"id": "q28", "query": "연구시설 장비비 통합관리기관이 지정 취소되면 어떻게 해야 해?", "type": "natural", "answer_sections": ["v4-s011"], "must_contain": ["3년"], "note": "학생인건비 지정취소(v1-s025, s026)와 구분되어야 한다"}
+{"id": "q26", "query": "보안사항을 국내에 누설한 경우랑 국외로 유출한 경우랑 제재부가금이 다른가?", "type": "comparison", "answer_sections": ["v3-s053"], "must_contain": ["100분의 20", "100분의 50"], "note": "같은 표 안에서 누설 대상에 따라 배율이 갈린다"}
+{"id": "q27", "query": "기술료를 안 내면 어떻게 돼?", "type": "multi_hop", "answer_sections": ["v3-s052", "v3-s024"], "must_contain": ["납부할 때까지"], "note": "기술료 미납은 납부할 때까지 참여제한. 환수금·제재부가금 미납(국세강제징수)과 다르며 v3-s024가 그 구분을 명시"}
+{"id": "q28", "query": "연구시설 장비비 통합관리기관이 지정 취소되면 어떻게 해야 해?", "type": "natural", "answer_sections": ["v4-s011"], "must_contain": ["잔액을 반납"], "note": "수행 중인 과제분을 제외한 잔액을 반납. 학생인건비 지정취소(v1-s025, s026)와 구분되어야 한다"}
 {"id": "q29", "query": "협약을 변경하려면 승인을 받아야 하나 통보만 하면 되나?", "type": "conditional", "answer_sections": ["main-s018"], "must_contain": ["승인/ 통보"], "note": "표 2-5 에 항목별 승인·통보 구분이 있다. 협약 '체결'(main-s017)과 다른 절"}
 {"id": "q30", "query": "제32조제1항제3호", "type": "citation", "answer_sections": ["v3-s052"], "must_contain": ["제32조제1항제3호"], "note": "조항 번호만으로 조회. 키워드 검색이 강한 유형"}
