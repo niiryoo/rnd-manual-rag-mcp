@@ -13,6 +13,13 @@ dependencies = [
     "mcp",
 ]
 
+# 배포본은 검색과 MCP 만 쓴다. 에이전트는 벤치마크에서만 돌아간다
+[project.optional-dependencies]
+eval = [
+    "anthropic>=1.6",  # output_config 구조화 출력
+    "langgraph>=1.0",
+]
+
 [project.scripts]
 rag-build = "rnd_rag.cli.build_chunks:main"
 rag-index = "rnd_rag.cli.build_index:main"
